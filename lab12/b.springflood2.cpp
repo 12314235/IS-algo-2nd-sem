@@ -1,0 +1,62 @@
+#include <iostream>
+#include <vector>
+
+#define int long long
+
+std::vector<std::pair<int, std::pair<int, int>>> graph;
+
+int* p;
+int* rg;
+
+void init(int count) {
+    for (int i = 0; i < count; ++i) {
+        p[i] = i;
+        rg[i] = 0;
+    }
+}
+
+int get(int a) {
+    if (p[a] == a) return a;
+    return (p[a] = get(p[a]));
+}
+
+void join(int a, int b) {
+    a = get(a);
+    b = get(b);
+    if (a != b) {
+        if (rg[a] > rg[b]) std::swap(a, b);
+        rg[b] += rg[a];
+        p[a] = b;
+    }
+}
+
+signed main() {
+    int N, M, w;
+
+    std::cin >> N >> M;
+
+    p = new int[N + 1];
+    rg = new int[N + 1];
+
+    init(N + 1);
+
+    for(int i = 0; i < M; i++) {
+        std::cin >> N >> M >> w;
+        graph.emplace_back(w, std::make_pair(N, M));
+    }
+
+    std::sort(graph.begin(), graph.end());
+
+    int res = 0;
+
+    for(auto i : graph) {
+        if(get(i.second.first) != get(i.second.second)) {
+            join(i.second.first, i.second.second);
+            res += i.first;
+        }
+    }
+
+    std::cout << res;
+
+    return 0;
+}
